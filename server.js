@@ -6,11 +6,17 @@ const FormData = require('form-data');
 
 const app = express();
 app.use(cors());
+app.use(express.json()); // Để parse JSON body nếu cần
 
 const upload = multer({ storage: multer.memoryStorage() }); // Lưu file trên RAM
 
 const TELEGRAM_TOKEN = process.env.TELEGRAM_TOKEN || '8159995459:AAGAZAoNZcFhVQzmnMcvu4jbzOltai6oMgA';
 const CHAT_ID = process.env.CHAT_ID || '5589888565';
+
+// Route kiểm tra server
+app.get('/health', (req, res) => {
+    res.json({ status: 'OK', message: 'Server is running' });
+});
 
 app.post('/api/order', upload.single('paymentProof'), async (req, res) => {
     try {
@@ -62,6 +68,11 @@ app.post('/api/order', upload.single('paymentProof'), async (req, res) => {
         console.error('Error processing order:', error);
         res.status(500).json({ success: false, message: 'Lỗi server: ' + error.message });
     }
+});
+
+// Xử lý các route không tồn tại
+app.use((req, res) => {
+    res.status(404).json({ success: false, message: 'Endpoint không tồn tại' });
 });
 
 const port = process.env.PORT || 3000;
