@@ -1,8 +1,15 @@
 const express = require('express');
 const multer = require('multer');
 const cors = require('cors');
-const fetch = require('node-fetch');
 const FormData = require('form-data');
+
+let fetch;
+try {
+    fetch = require('node-fetch');
+} catch (error) {
+    console.error('Failed to load node-fetch:', error);
+    process.exit(1); // Thoát nếu không load được node-fetch
+}
 
 const app = express();
 app.use(cors());
